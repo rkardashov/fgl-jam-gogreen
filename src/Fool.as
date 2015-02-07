@@ -9,7 +9,7 @@ package
 		public function Fool() 
 		{
 			super();
-			trace("oh hi");
+			//trace("oh hi");
 		}
 		
 		override protected function prepare(): void 
@@ -36,15 +36,9 @@ package
 			GameEvents.dispatch(GameEvents.STATS_PLUS_REFORMED);
 			var sequence: Vector.<Action> = new Vector.<Action>();
 			
-			// if far from trash - goto nearest (Tx - w/2 | Tx + w/2)
-			// if near trash - 
-			//		goto nearest (Tx - w/2 - 1 | Tx + w/2 + 1)
-			//		goto (Tx - w/2 | Tx + w/2)
-			var dx: Number = trash.x - x;
 			// trash pick animation is to the right
-			var sign: Number = 1;
-			if (trash.x < x)
-				sign = -1;
+			var dx: Number = trash.x - x;
+			var sign: Number = Utils.sign(trash.x - x);
 			if (Math.abs(dx) < 50)
 				sequence.push(new Action(Action.MOVE, trash.x - 52 * sign));
 			sequence.push(new Action(Action.MOVE, trash.x - 50 * sign));
@@ -52,13 +46,11 @@ package
 			
 			var nextX: Number = trash.x - 50 * sign;
 			
-			dx = Game.TRASH_CAN_X - nextX;
 			// trash drop animation is to the left
-			sign = -1;
-			if (Game.TRASH_CAN_X < nextX)
-				sign = 1;
-			if (Math.abs(dx) < 50)
-				sequence.push(new Action(Action.MOVE, Game.TRASH_CAN_X - 52 * sign));
+			dx = Game.TRASH_CAN_X - nextX;
+			sign = Utils.sign(Game.TRASH_CAN_X - nextX);
+			if (Math.abs(dx) > 50)
+				sequence.push(new Action(Action.MOVE, Game.TRASH_CAN_X - 48 * sign));
 			sequence.push(new Action(Action.MOVE, Game.TRASH_CAN_X - 50 * sign));
 			sequence.push(new Action(Action.STAY, 0.8, Action.TRASH_TO_CAN));
 			sequence.push(action);

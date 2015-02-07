@@ -66,6 +66,7 @@ package
 			speed = SPEED;
 			if (Math.random() > 0.5)
 				speed = - SPEED;
+			speed *= (0.8 + Math.random() * 0.4);
 			isDraggable = false;
 			
 			addEventListener(EnterFrameEvent.ENTER_FRAME, onEnterFrame);
@@ -122,16 +123,16 @@ package
 			if (action.type == Action.MOVE)
 			{
 				dx = action.target - x;
-				if (Math.abs(dx) <= 1)
+				//if (Math.abs(dx) <= 1)
+				if (Utils.sign(dx) !== Utils.sign(action.target - action.start))
 				{
-					//action = actions.shift();
 					nextAction();
 					return;
 				}
-				//state = STATE_MOVING;
-				speed = SPEED * (dx) / Math.abs(dx);
+				//speed = SPEED * (dx) / Math.abs(dx);
+				speed = Math.abs(speed) * Utils.sign(dx);
 				x += speed * e.passedTime;
-				scaleX = (dx) / Math.abs(dx);
+				scaleX = Utils.sign(dx);// (dx) / Math.abs(dx);
 				if (x > 800 || x < -width)
 					kill();
 			}
@@ -190,64 +191,16 @@ package
 			//GameEvents.dispatch(GameEvents.DUDE_DIE, this);
 		}
 		
-		private function nextAction(): void 
+		protected function nextAction(): void 
 		{
-			/*if (action)
-			{
-				if (action.trash == Action.TRASH_PICK)
-				{
-					trash.removeFromParent();
-					GameEvents.dispatch(GameEvents.TRASH_PICK);
-				}
-				
-				if (action.trash == Action.TRASH_LITTER)
-				{
-					trash.x = x - 50 * scaleX;
-					trash.y = y;
-					GameEvents.dispatch(GameEvents.LITTER, trash);
-					littered = true;
-				}
-				if (action.trash == Action.TRASH_TO_CAN)
-					GameEvents.dispatch(GameEvents.TRASH_TO_CAN);
-				action.trash = "";
-				
-				if (action.type == Action.MOVE)
-				{
-					dx = action.target - x;
-					if (Math.abs(dx) < 5)
-					{
-						//action = actions.shift();
-						nextAction();
-						return;
-					}
-					//state = STATE_MOVING;
-					speed = SPEED * (dx) / Math.abs(dx);
-					x += speed * e.passedTime;
-					scaleX = (dx) / Math.abs(dx);
-					if (x > 800 || x < -width)
-						kill();
-				}
-				if (action.type == Action.STAY)
-				{
-					dt += e.passedTime;
-					if (dt >= action.target)
-					{
-						dt = 0;
-						//action = actions.shift();
-						nextAction();
-						return;
-					}
-				}
-			}*/
-			
-			
-			
-			
 			action = actions.shift();
 			dt = 0;
 			
 			if (!action)
 				return;
+				
+			if (action.type == Action.MOVE)
+				action.start = x;
 			
 			//if (action.type == Action.STAY)
 			switch (action.type)

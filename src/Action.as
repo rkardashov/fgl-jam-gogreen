@@ -14,6 +14,7 @@ package
 		static public const TRASH_PICK: String = "trashPick";
 		
 		public var type:String;
+		public var start: Number;
 		public var target: Number;
 		public var trash: String;
 		

@@ -117,7 +117,7 @@ package
 			{
 				dt = 0;
 				nextDudeTime = 10;// 3 + Math.random() * 2;
-				var dudeClass: Class = Fool;// [GoodBoy, Fool, RudeBoy][int(Math.random() * 3)];
+				var dudeClass: Class = RudeBoy;// [GoodBoy, Fool, RudeBoy][int(Math.random() * 3)];
 				layerObjects.addChild(new dudeClass());
 			}
 		}
