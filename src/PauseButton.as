@@ -22,6 +22,7 @@ package
 		
 		private function onTriggered(e:Event):void 
 		{
+			Assets.playSound("pause_1");
 			paused = !paused;
 			if (paused)
 				GameEvents.dispatch(GameEvents.PAUSE)

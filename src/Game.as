@@ -2,6 +2,7 @@ package
 {
 	import flash.events.TimerEvent;
 	import flash.geom.Rectangle;
+	import flash.media.SoundChannel;
 	import flash.ui.Keyboard;
 	import flash.utils.setInterval;
 	import flash.utils.setTimeout;
@@ -32,7 +33,9 @@ package
 		static public const TRASH_CAN_X:Number = 400;
 		static public const FLOOR_Y: Number = 320;
 		static public const DOOR_X: Number = 240;
-		static private const MAX_TRASH: int = 3;
+		
+		static private const MAX_TRASH: int = 0;// 3;
+		static private const DUDE_INTERVAL:Number = 3;
 		
 		private var gameOver: Boolean;
 		private var layerObjects:Sprite;
@@ -43,11 +46,18 @@ package
 		private var pauseScreen:Image;
 		private var layerTrash:Sprite;
 		private var gameOverView:GameOverView;
+		private var music: SoundController;
 		
 		public function Game(): void 
 		{
-			Assets.init();
-			Assets.playSound(Assets.SOUND_SUPERMARKET);
+			Assets.init(onAssetsLoaded);
+		}
+		
+		private function onAssetsLoaded():void 
+		{
+			//Assets.playSound("music_bg");// Assets.SOUND_SUPERMARKET);
+			music = new SoundController("music_bg");
+			//Assets.getSound("music_bg").play();// Assets.SOUND_SUPERMARKET);
 			
 			addChild(Assets.getImage("bg"));
 			clipRect = new Rectangle(0, 0, 640, 480);
@@ -116,8 +126,9 @@ package
 			if (dt >= nextDudeTime)
 			{
 				dt = 0;
-				nextDudeTime = 10;// 3 + Math.random() * 2;
-				var dudeClass: Class = RudeBoy;// [GoodBoy, Fool, RudeBoy][int(Math.random() * 3)];
+				//nextDudeTime = DUDE_INTERVAL_MIN + Math.random() * 2;
+				nextDudeTime = DUDE_INTERVAL * (0.8 + Math.random() * 0.4);
+				var dudeClass: Class = [GoodBoy, Fool, RudeBoy][int(Math.random() * 3)];
 				layerObjects.addChild(new dudeClass());
 			}
 		}
@@ -155,6 +166,13 @@ package
 			{
 				y: -100,
 				transition: Transitions.EASE_OUT
+			});
+			/*music.soundTransform.volume = 0.2;
+			music.soundTransform = music.soundTransform;*/
+			Starling.juggler.tween(music, 1,
+			{
+				volume: 0,
+				transition: Transitions.LINEAR
 			});
 			removeEventListener(EnterFrameEvent.ENTER_FRAME, onEnterFrame);
 		}

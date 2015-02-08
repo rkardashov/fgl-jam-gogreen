@@ -101,6 +101,7 @@ package
 		
 		override protected function onRelease(): void
 		{
+			Assets.playSound("hit");
 			if (++clicks > MAX_CLICKS)
 			{
 				// TODO: animate explosion
@@ -148,6 +149,7 @@ package
 					{
 						trash.removeFromParent();
 						GameEvents.dispatch(GameEvents.TRASH_PICK);
+						Assets.playSound("pick_trash");
 					}
 					
 					if (action.trash == Action.TRASH_LITTER)
@@ -155,10 +157,14 @@ package
 						trash.x = x - 50 * scaleX;
 						trash.y = y;
 						GameEvents.dispatch(GameEvents.LITTER, trash);
+						Assets.playSound("litter");
 						littered = true;
 					}
 					if (action.trash == Action.TRASH_TO_CAN)
+					{
 						GameEvents.dispatch(GameEvents.TRASH_TO_CAN);
+						Assets.playSound("litter");
+					}
 					action.trash = "";
 					
 					

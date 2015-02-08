@@ -2,6 +2,7 @@ package
 {
 	import flash.display.Bitmap;
 	import flash.media.Sound;
+	import flash.media.SoundChannel;
 	import starling.core.Starling;
 	import starling.display.Image;
 	import starling.display.MovieClip;
@@ -17,45 +18,21 @@ package
 	 */
 	public class Assets 
 	{
-		[Embed(source = "../assets/atlas_0.png")]
-		static private const _atlas_bitmap_0: Class;
-		[Embed(source = "../assets/atlas_0.xml", mimeType="application/octet-stream")]
-		static private const _atlas_xml_0: Class;
-		
-		[Embed(source = "../assets/atlas_1.png")]
-		static private const _atlas_bitmap_1: Class;
-		[Embed(source = "../assets/atlas_1.xml", mimeType="application/octet-stream")]
-		static private const _atlas_xml_1: Class;
-		
-		[Embed(source = "../assets/atlas_2.png")]
-		static private const _atlas_bitmap_2: Class;
-		[Embed(source = "../assets/atlas_2.xml", mimeType="application/octet-stream")]
-		static private const _atlas_xml_2: Class;
-		
-		static private var _atlases:Vector.<TextureAtlas>;
-		
-		[Embed(source = "../assets/fonts/systematic_9.fnt", mimeType="application/octet-stream")]
-		static private const font_systematic_9_xml: Class;
-		
-		/*[Embed(source = "../../assets/fonts/arcade/bitmapfont/arcade_0.png")]
-		static private const _font_bmp_arcade: Class;*/
-		[Embed(source = "../assets/fonts/arcade_10.fnt", mimeType="application/octet-stream")]
-		static private const font_arcade_10_xml: Class;
-		
-		public static const SOUND_SUPERMARKET: String = "supermarket";
-		[Embed(source = "../assets/sounds/219533__pulswelle__supermarket.mp3")]
-		private static const _SOUND_SUPERMARKET: Class;
-		
-		private static const _sounds: Object = { };
+		static private var _manager:AssetManager;
+		static private var onLoadComplete:Function;
 		
 		public function Assets() 
 		{
 			
 		}
 		
-		static public function init(): void 
+		static public function init(onLoadComplete: Function): void 
 		{
-			_atlases = new Vector.<TextureAtlas>();
+			Assets.onLoadComplete = onLoadComplete;
+			_manager = new AssetManager();
+			_manager.enqueue(EmbeddedAssets);
+			_manager.loadQueue(onLoadingProgress);
+			/*_atlases = new Vector.<TextureAtlas>();
 			_atlases.push(new TextureAtlas(
 				Texture.fromEmbeddedAsset(_atlas_bitmap_0),
 				new XML(new _atlas_xml_0())
@@ -82,31 +59,40 @@ package
 					trace("cannot register the font: " + fontname);
 			}
 			
-			_sounds[SOUND_SUPERMARKET] = new _SOUND_SUPERMARKET();
+			_sounds[SOUND_SUPERMARKET] = new _SOUND_SUPERMARKET();*/
+		}
+		
+		static private function onLoadingProgress(progress: Number): void 
+		{
+			//trace("loaded: " + int(progress * 100));
+			if (progress >= 1.0)
+				onLoadComplete();
 		}
 		
 		static public function getTexture(textureName: String): Texture 
 		{
-			var t: Texture;
+			/*var t: Texture;
 			for (var i:int = 0; i < _atlases.length; i++) 
 			{
 				t = _atlases[i].getTexture(textureName);
 				if (t)
 					return t;
 			}
-			return null;
+			return null;*/
+			return _manager.getTexture(textureName);
 		}
 		
 		static public function getTextures(textureNamePrefix: String): Vector.<Texture> 
 		{
-			var t: Vector.<Texture>;
+			/*var t: Vector.<Texture>;
 			for (var i:int = 0; i < _atlases.length; i++) 
 			{
 				t = _atlases[i].getTextures(textureNamePrefix);
 				if (t && t.length > 0)
 					return t;
 			}
-			return null;
+			return null;*/
+			return _manager.getTextures(textureNamePrefix);
 		}
 		
 		static public function getImage(textureName: String = ""): Image
@@ -127,9 +113,9 @@ package
 			return null;
 		}
 		
-		static public function playSound(soundID: String): void 
+		static public function playSound(soundID:String, loop:Boolean = false):SoundChannel
 		{
-			if (_sounds[soundID])
+			/*if (_sounds[soundID])
 			{
 				//if (_sounds[soundID].isPrototypeOf(Array))
 				if (_sounds[soundID] as Array)
@@ -140,17 +126,13 @@ package
 				}
 				else
 					Sound(_sounds[soundID]).play();
-			}
+			}*/
+			return _manager.playSound(soundID, 0, loop ? int.MAX_VALUE : 1);
 		}
 		
-		/*static private function getAnimAtlas(): TextureAtlas
+		static public function getSound(soundID: String): Sound
 		{
-			if (!_atlas_anim)
-				_atlas_anim = new TextureAtlas(
-					Texture.fromEmbeddedAsset(_atlas_anim_bitmap),
-					new XML(new _atlas_anim_xml())
-					);
-			return _atlas_anim;
-		}*/
+			return _manager.getSound(soundID);
+		}
 	}
 }

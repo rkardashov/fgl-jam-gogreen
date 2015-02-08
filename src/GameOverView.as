@@ -1,5 +1,9 @@
 package 
 {
+	import flash.events.TimerEvent;
+	import flash.utils.setInterval;
+	import flash.utils.setTimeout;
+	import flash.utils.Timer;
 	import starling.animation.Transitions;
 	import starling.core.Starling;
 	import starling.display.Button;
@@ -8,6 +12,7 @@ package
 	import starling.text.TextField;
 	import starling.utils.HAlign;
 	import starling.utils.VAlign;
+	import flash.events.Event;
 	
 	/**
 	 * ...
@@ -23,6 +28,7 @@ package
 		private var textGoodBoys: NumericView;
 		private var textReformed: NumericView;
 		private var textEliminated: NumericView;
+		private var timer: Timer = new Timer(600);
 		
 		public function GameOverView() 
 		{
@@ -31,7 +37,7 @@ package
 			x = 320 + 640;
 			y = 240;
 			alignPivot();
-			addEventListener(Event.TRIGGERED, onRestart);
+			addEventListener(starling.events.Event.TRIGGERED, onRestart);
 			
 			/*addChild(time = new TextField(125, 30, "", "Arcade_10", 20, 0xFFFFFF));
 			time.autoScale = false;
@@ -72,6 +78,8 @@ package
 			GameEvents.subscribe(GameEvents.STATS_PLUS_GOOD_BOY, onPlusGoodBoy);
 			GameEvents.subscribe(GameEvents.STATS_PLUS_REFORMED, onPlusReformed);
 			//GameEvents.subscribe(GameEvents.STATS_PLUS_ELIMINATED, onPlusEliminated);
+			
+			timer.addEventListener(TimerEvent.TIMER, onTimer);
 		}
 		
 		private function onGameStart(): void 
@@ -99,8 +107,10 @@ package
 			textEliminated.value ++;
 		}
 		
-		private function onRestart(e:Event):void 
+		private function onRestart(e:starling.events.Event):void 
 		{
+			timer.stop();
+			Assets.playSound("car_depart");
 			Starling.juggler.tween(this, 3,
 			{
 				x: 320 - 640,
@@ -114,7 +124,7 @@ package
 			});
 		}
 		
-		private function onTotalTime(e: Event, t: int): void 
+		private function onTotalTime(e: starling.events.Event, t: int): void 
 		{
 			//time.text = "time: " + String(t) + " sec";
 			time.value = t;
@@ -123,12 +133,26 @@ package
 		private function onGameOver():void 
 		{
 			visible = true;
+			Assets.playSound("car_start");
+			setTimeout(Assets.playSound, 1000, "car_arrive");
+			setTimeout(timer.start, 2300);
 			
 			Starling.juggler.tween(this, 3,
 			{
 				x: 320,
-				transition: Transitions.EASE_IN_OUT
+				transition: Transitions.EASE_IN_OUT//,
+				//onComplete: timer.start
+				/*function(): void
+				{
+					Assets.playSound("car_wait", true);
+					timer.start();
+				}*/
 			});
+		}
+		
+		private function onTimer(e:TimerEvent):void 
+		{
+			Assets.playSound("car_wait");// , true);
 		}
 	}
 }

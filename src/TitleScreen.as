@@ -51,7 +51,8 @@ package
 		
 		private function onStartTrigger(e:Event):void 
 		{
-			Starling.juggler.tween(this, 2,
+			Assets.playSound("start");
+			Starling.juggler.tween(this, 1,
 			{
 				alpha: 0,
 				transition: Transitions.EASE_IN_OUT,
